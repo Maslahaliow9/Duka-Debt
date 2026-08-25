@@ -1,0 +1,806 @@
+/* Duka Debt — design tokens
+   Palette drawn from a shopkeeper's ledger book and receipt pad, not a generic AI look:
+   --paper   #F6EFD9  aged ledger-paper cream
+   --ink     #1B2E2B  deep teal-charcoal (headers, high-contrast text)
+   --charcoal#2B2B28  body text
+   --amber   #D98E2B  till/receipt-stamp amber (primary action)
+   --moss    #4F7942  paid / positive ledger-ink green
+   --rust    #B3402C  owed / overdue rust-red (used sparingly)
+   --line    #D8CBA0  faint ledger rule line
+*/
+
+:root {
+  --paper: #F6EFD9;
+  --paper-raised: #FBF6E8;
+  --ink: #1B2E2B;
+  --charcoal: #2B2B28;
+  --amber: #D98E2B;
+  --amber-dark: #B9741C;
+  --moss: #4F7942;
+  --rust: #B3402C;
+  --line: #D8CBA0;
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--paper);
+  color: var(--charcoal);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 35px,
+    var(--line) 35px,
+    var(--line) 36px
+  );
+}
+
+.app {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: var(--paper);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- Header / signboard ---------- */
+header.signboard {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 22px 20px 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+header.signboard h1 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 28px;
+  letter-spacing: 0.01em;
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+header.signboard h1 span.mark {
+  color: var(--amber);
+  font-style: italic;
+}
+
+header.signboard .tagline {
+  font-size: 12.5px;
+  opacity: 0.75;
+  margin-top: 4px;
+  letter-spacing: 0.02em;
+}
+
+header.signboard .signout {
+  position: absolute;
+  top: 22px;
+  right: 20px;
+  background: none;
+  border: 1px solid rgba(246,239,217,0.35);
+  color: var(--paper);
+  font-family: var(--font-body);
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+header.signboard .signout:hover { border-color: var(--paper); }
+
+/* ---------- Shop name row (inside header) ---------- */
+.shop-name-row {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.shop-name-badge {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  background: var(--amber);
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+.shop-name-edit {
+  background: none;
+  border: none;
+  color: var(--paper);
+  opacity: 0.7;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 2px;
+}
+.shop-name-edit:hover { opacity: 1; }
+.shop-name-set {
+  background: none;
+  border: 1px dashed rgba(246,239,217,0.4);
+  color: var(--paper);
+  opacity: 0.85;
+  font-family: var(--font-body);
+  font-size: 11.5px;
+  padding: 5px 10px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+.shop-name-set:hover { opacity: 1; border-color: var(--paper); }
+
+/* ---------- Tab bar (Duka Debt / Mama Chama) ---------- */
+.tab-bar {
+  display: flex;
+  gap: 8px;
+  padding: 12px 20px 0;
+  background: var(--ink);
+}
+.tab-btn {
+  flex: 1;
+  background: rgba(246,239,217,0.08);
+  border: 1px solid rgba(246,239,217,0.2);
+  color: var(--paper);
+  opacity: 0.7;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 13px;
+  padding: 10px 8px;
+  border-radius: 8px 8px 0 0;
+  cursor: pointer;
+}
+.tab-btn.active {
+  background: var(--paper);
+  color: var(--ink);
+  opacity: 1;
+  border-color: var(--paper);
+}
+
+main { flex: 1; padding: 20px; padding-bottom: 20px; }
+
+/* ---------- Weekly summary banner ---------- */
+.week-summary {
+  display: flex;
+  gap: 10px;
+  margin: 4px 0 20px;
+}
+.week-summary-item {
+  flex: 1;
+  background: var(--paper-raised);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px 10px;
+  text-align: center;
+}
+.week-summary-label {
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+  opacity: 0.65;
+  margin-bottom: 5px;
+}
+.week-summary-amount {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--rust);
+}
+.week-summary-amount.collected {
+  color: var(--moss);
+}
+
+/* ---------- Stamp: total owed ---------- */
+.stamp-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 8px 0 28px;
+}
+
+.stamp {
+  width: 168px;
+  height: 168px;
+  border-radius: 50%;
+  border: 3px solid var(--rust);
+  color: var(--rust);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transform: rotate(-4deg);
+  text-align: center;
+  position: relative;
+}
+.stamp::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 1px dashed var(--rust);
+  border-radius: 50%;
+  opacity: 0.55;
+}
+.stamp .label {
+  font-family: var(--font-body);
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  opacity: 0.85;
+  margin-bottom: 4px;
+}
+.stamp .amount {
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+.stamp.zero {
+  border-color: var(--moss);
+  color: var(--moss);
+}
+.stamp.zero::before { border-color: var(--moss); }
+
+/* ---------- Section labels ---------- */
+.section-label {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 15px;
+  color: var(--ink);
+  margin: 0 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-label::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+/* ---------- Customer rows (receipt strips) ---------- */
+.customer-list { display: flex; flex-direction: column; gap: 10px; }
+
+.customer-row {
+  background: var(--paper-raised);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--rust);
+  border-radius: 6px;
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.customer-row:hover { transform: translateX(2px); box-shadow: 2px 2px 0 var(--line); }
+.customer-row.settled { border-left-color: var(--moss); opacity: 0.75; }
+
+.customer-row .row-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+}
+.customer-row .name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--ink);
+}
+.customer-row .owed {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--rust);
+  white-space: nowrap;
+}
+.customer-row.settled .owed { color: var(--moss); }
+.customer-row .meta {
+  font-size: 12px;
+  color: var(--charcoal);
+  opacity: 0.6;
+  margin-top: 2px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--charcoal);
+  opacity: 0.6;
+  font-size: 14px;
+}
+.empty-state .big { font-family: var(--font-display); font-size: 17px; opacity: 1; margin-bottom: 6px; color: var(--ink); }
+
+/* ---------- Forms ---------- */
+.field { margin-bottom: 14px; }
+.field label {
+  display: block;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+  opacity: 0.75;
+  margin-bottom: 5px;
+}
+.field input, .field textarea {
+  width: 100%;
+  font-family: var(--font-body);
+  font-size: 15px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--paper-raised);
+  color: var(--charcoal);
+}
+.field input:focus, .field textarea:focus {
+  outline: 2px solid var(--amber);
+  outline-offset: 1px;
+}
+.field.amount input { font-family: var(--font-mono); }
+
+button.primary {
+  width: 100%;
+  background: var(--amber);
+  color: var(--ink);
+  border: none;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 15px;
+  padding: 13px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+button.primary:hover { background: var(--amber-dark); }
+button.primary:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+button.ghost {
+  width: 100%;
+  background: none;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 13px;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 8px;
+}
+button.ghost:hover { border-color: var(--ink); }
+
+.error-text {
+  color: var(--rust);
+  font-size: 13px;
+  margin: -6px 0 12px;
+}
+
+/* ---------- Founder / about link + sheet ---------- */
+.founder-link-wrap {
+  text-align: center;
+  padding: 0 20px 100px;
+}
+.founder-link {
+  background: none;
+  border: none;
+  color: var(--ink);
+  opacity: 0.55;
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 6px;
+}
+.founder-link:hover { opacity: 0.85; }
+
+.founder-sheet .founder-badge {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--amber-dark);
+  background: rgba(217,142,43,0.12);
+  padding: 4px 9px;
+  border-radius: 20px;
+  margin-bottom: 10px;
+}
+.founder-sheet h2 {
+  font-size: 24px;
+  margin-bottom: 4px;
+}
+.founder-location {
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--charcoal);
+  opacity: 0.55;
+  margin-bottom: 20px;
+}
+.founder-subhead {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 14.5px;
+  color: var(--amber-dark);
+  margin: 18px 0 6px;
+}
+.founder-bio {
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: var(--charcoal);
+  margin: 0 0 4px;
+}
+.founder-signoff {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 15px;
+  color: var(--ink);
+  margin-top: 20px;
+  padding-top: 14px;
+  border-top: 1px dotted var(--line);
+}
+
+/* ---------- Floating add button ---------- */
+.fab {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(440px, calc(100% - 40px));
+  background: var(--ink);
+  color: var(--paper);
+  border: none;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 15px;
+  padding: 15px;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(27,46,43,0.25);
+}
+.fab:hover { background: #24413c; }
+
+/* ---------- Modal / detail sheet ---------- */
+.sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(27,46,43,0.45);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 50;
+  animation: fadeIn 0.15s ease;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.sheet {
+  background: var(--paper);
+  width: 100%;
+  max-width: 480px;
+  border-radius: 16px 16px 0 0;
+  padding: 22px 20px 28px;
+  max-height: 88vh;
+  overflow-y: auto;
+}
+.sheet h2 {
+  font-family: var(--font-display);
+  font-size: 21px;
+  color: var(--ink);
+  margin: 0 0 16px;
+}
+.sheet .close-x {
+  float: right;
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: var(--charcoal);
+  cursor: pointer;
+  line-height: 1;
+}
+
+.debt-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 9px 0;
+  border-bottom: 1px dotted var(--line);
+  font-size: 14px;
+}
+.debt-line:last-child { border-bottom: none; }
+.debt-line .amt { font-family: var(--font-mono); font-weight: 700; }
+.debt-line.paid .amt { color: var(--moss); text-decoration: line-through; opacity: 0.7; }
+.debt-line .desc { opacity: 0.7; font-size: 12.5px; }
+.debt-line button.mark-paid {
+  background: none;
+  border: 1px solid var(--moss);
+  color: var(--moss);
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.debt-line button.mark-paid:hover { background: var(--moss); color: var(--paper); }
+
+.whatsapp-btn {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  background: var(--moss);
+  color: var(--paper);
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 14px;
+  padding: 12px;
+  border-radius: 6px;
+  margin-top: 16px;
+}
+.whatsapp-btn:hover { background: #3e6135; }
+
+/* ---------- Mama Chama: chip rows (years / months) ---------- */
+.chip-row {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  margin-bottom: 16px;
+  scrollbar-width: none;
+}
+.chip-row::-webkit-scrollbar { display: none; }
+.chip-row.month-row { margin-bottom: 14px; }
+
+.year-chip, .month-chip {
+  flex: 0 0 auto;
+  background: var(--paper-raised);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 13px;
+  padding: 8px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.year-chip.active, .month-chip.active {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+.year-chip.add {
+  border: 1px dashed var(--amber-dark);
+  color: var(--amber-dark);
+  background: none;
+}
+.month-chip { font-size: 12.5px; padding: 7px 11px; }
+
+/* ---------- Mama Chama: toolbar ---------- */
+.chama-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.members-link {
+  background: var(--paper-raised);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+.year-delete {
+  background: none;
+  border: none;
+  color: var(--rust);
+  opacity: 0.7;
+  font-family: var(--font-body);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 4px;
+}
+.year-delete:hover { opacity: 1; }
+
+/* ---------- Mama Chama: month/overview toggle ---------- */
+.view-toggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.view-toggle-btn {
+  flex: 1;
+  background: none;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 12.5px;
+  padding: 9px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.view-toggle-btn.active {
+  background: var(--amber);
+  border-color: var(--amber);
+  color: var(--ink);
+}
+
+/* ---------- Mama Chama: month list rows ---------- */
+.chama-list { margin-top: 4px; }
+.chama-row {
+  background: var(--paper-raised);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--rust);
+  border-radius: 6px;
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.chama-row:hover { transform: translateX(2px); box-shadow: 2px 2px 0 var(--line); }
+.chama-row.paid { border-left-color: var(--moss); }
+.chama-row .row-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+}
+.chama-row .name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--ink);
+}
+.chama-row .status {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  color: var(--rust);
+}
+.chama-row .status.paid { color: var(--moss); }
+.chama-row .meta {
+  font-size: 12px;
+  color: var(--charcoal);
+  opacity: 0.65;
+  margin-top: 3px;
+}
+
+/* ---------- Mama Chama: year overview grid ---------- */
+.grid-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  -webkit-overflow-scrolling: touch;
+}
+table.chama-grid {
+  border-collapse: collapse;
+  width: 100%;
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  background: var(--paper-raised);
+}
+table.chama-grid th, table.chama-grid td {
+  padding: 9px 8px;
+  text-align: center;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+table.chama-grid thead th {
+  color: var(--ink);
+  opacity: 0.7;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 700;
+  border-bottom: 2px solid var(--line);
+}
+table.chama-grid th.row-head {
+  position: sticky;
+  left: 0;
+  background: var(--paper-raised);
+  text-align: left;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 13.5px;
+  color: var(--ink);
+  padding-left: 12px;
+  z-index: 1;
+  box-shadow: 1px 0 0 var(--line);
+}
+table.chama-grid tbody tr:last-child td,
+table.chama-grid tbody tr:last-child th { border-bottom: none; }
+td.grid-cell {
+  cursor: pointer;
+  color: var(--rust);
+  opacity: 0.5;
+  font-weight: 700;
+}
+td.grid-cell.paid { color: var(--moss); opacity: 1; font-weight: 700; }
+td.grid-cell:hover { background: rgba(217,142,43,0.12); }
+td.grid-total {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--ink);
+  padding-right: 12px;
+}
+
+/* ---------- Mama Chama: cell sheet ---------- */
+.cell-status {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--rust);
+  background: var(--paper-raised);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 12px;
+  text-align: center;
+  margin-bottom: 16px;
+}
+.cell-status.paid { color: var(--moss); }
+
+/* ---------- Icon buttons (members list) ---------- */
+.icon-btn {
+  background: none;
+  border: none;
+  font-size: 15px;
+  cursor: pointer;
+  padding: 2px 4px;
+}
+
+/* ---------- Auth screen ---------- */
+.auth-screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 32px 24px;
+}
+.auth-screen h1 {
+  font-family: var(--font-display);
+  font-size: 32px;
+  color: var(--ink);
+  text-align: center;
+  margin: 0 0 4px;
+}
+.auth-screen h1 span { color: var(--amber); font-style: italic; }
+.auth-screen .sub {
+  text-align: center;
+  font-size: 13px;
+  color: var(--charcoal);
+  opacity: 0.65;
+  margin-bottom: 32px;
+}
+.auth-toggle {
+  text-align: center;
+  font-size: 13px;
+  margin-top: 14px;
+}
+.auth-toggle button {
+  background: none;
+  border: none;
+  color: var(--amber-dark);
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 13px;
+  padding: 0;
+}
+
+.loading-text { text-align: center; padding: 40px; opacity: 0.6; font-size: 14px; }
