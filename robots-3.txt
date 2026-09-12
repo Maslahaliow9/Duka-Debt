@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://duka-debt.maslahaliow9.workers.dev/sitemap.xml
